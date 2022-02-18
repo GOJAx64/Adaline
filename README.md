@@ -1,4 +1,4 @@
-# Práctica 01 -  Perceptron
+# Práctica 02 - Adaline
 
 Inteligencia Artificial II
 Sección D01
