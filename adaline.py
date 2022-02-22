@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import math
 
 
 class Adaline:
@@ -19,5 +20,6 @@ class Adaline:
             self.pesos.append(random.uniform(self.rango_de_normalizacion[0], self.rango_de_normalizacion[1]))
         self.pesos = np.array(self.pesos)
 
-    def pw(self, x):#cambia a sigmoide
-        return 1 if np.dot(x, self.pesos) >= 0 else 0
+    def f(self, x):#cambia a sigmoide
+        #return 1 if np.dot(x, self.pesos) >= 0 else 0
+        return 1/(1 + math.exp(-np.dot(x, self.pesos)))

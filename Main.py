@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import TextBox, Button
 import matplotlib as mpl
+import math
 
 from adaline import Adaline
 
@@ -76,18 +77,18 @@ class Ventana:
 
     def entrenar_adaline(self, event):
         if self.pesos_inicializados and not self.adaline_entrenado:
-            while not self.termino and self.epoca_actual < self.adaline.epocas_maximas:
-                self.termino = True
+            error_cuadratico = 1
+            while error_cuadratico > self.error_minimo and self.epoca_actual < self.adaline.epocas_maximas:
                 self.epoca_actual += 1
                 for i, x in enumerate(self.puntos):
                     x = np.insert(x, 0, -1.0)
-                    error = self.clase_deseada[i] - self.adaline.pw(x)
-                    if error != 0:
-                        self.termino = False
-                        self.adaline.pesos = self.adaline.pesos + np.multiply((self.adaline.rango * error), x)
-                        self.graficar_linea()
+                    error = self.clase_deseada[i] - self.adaline.f(x)
+                    derivada = self.adaline.f(x) * ( 1- self.adaline.f(x))
+                    self.adaline.pesos = self.adaline.pesos + np.multiply((2*self.adaline.rango * error * derivada ), x)
+                    #error cuadratico
+                    self.graficar_linea()
             
-            self.grafica.text(0, -1.250,'Resultado = ' + ('Converge' if self.termino else 'No converge'),fontsize=16)
+            self.grafica.text(0, -1.250,'Resultado = ' + ('Converge' if self.termino else 'No converge'),fontsize=16) #cambiar validacion
             self.texto_de_epoca.set_text("Épocas: %s" % self.epoca_actual)
             plt.pause(0.1)
             self.adaline_entrenado = True
