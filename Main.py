@@ -43,15 +43,15 @@ class Ventana:
         self.grafica_errores.set_title("Errores")
         self.grafica_errores.set_xlabel("Epoca")
         self.grafica_errores.set_ylabel("Errores")
-    # Acomodo de los botones y cajas de texto
+        # Acomodo de los botones y cajas de texto
         cordenadas_rango = plt.axes([0.200, 0.9, 0.100, 0.03])
         coordenadas_epcoas = plt.axes([0.440, 0.9, 0.100, 0.03])
         coordenadas_error_deseado = plt.axes([0.720, 0.9, 0.100, 0.03])
         coordenadas_pesos = plt.axes([0.025, 0.05, 0.125, 0.03])
         coordenadas_evaluar = plt.axes([0.160, 0.05, 0.1, 0.03])
         coordenadas_reiniciar = plt.axes([0.270, 0.05, 0.1, 0.03])
-        coordenadas_entrenar_adaline = plt.axes([0.680, 0.05, 0.1, 0.03])
-        coordenadas_entrenar_perceptron = plt.axes([0.800, 0.05, 0.1, 0.03])
+        coordenadas_entrenar_adaline = plt.axes([0.380, 0.05, 0.1, 0.03])
+        coordenadas_entrenar_perceptron = plt.axes([0.490, 0.05, 0.1, 0.03])
         self.text_box_rango = TextBox(cordenadas_rango, "Rango de aprendizaje:")
         self.text_box_epocas = TextBox(coordenadas_epcoas, "Épocas maximas:")
         self.text_box_error_minimo_deseado = TextBox(coordenadas_error_deseado, "Error mínimo deseado:")
@@ -120,7 +120,7 @@ class Ventana:
             
             if(error_cuadratico < self.error_minimo):
                 self.termino=True
-            self.grafica.text(0, -1.250,'Resultado = ' + ('Error minimo obtenido' if self.termino else 'No converge'),fontsize=16) #cambiar validacion
+            plt.text(1.2, 0.3,'Resultado = ' + ('Error minimo obtenido' if self.termino else 'No converge'), fontsize=16) 
             self.texto_de_epoca.set_text("Épocas: %s" % self.epoca_actual)
             plt.pause(0.1)
             self.adaline_entrenado = True
@@ -137,8 +137,9 @@ class Ventana:
         self.grafica_errores.clear()
         self.grafica_errores.plot(y,x)
         plt.pause(0.3)
+
     def evaluar(self,event):
-        if(self.adaline_entrenado and len(self.sin_evaluar)>0):
+        if(self.adaline_entrenado and len(self.sin_evaluar) > 0):
             self.grafica.clear() 
             self.barrido()
             self.grafica.set_xlim(-1.0,1.0)
@@ -200,7 +201,7 @@ class Ventana:
         try:
             self.epocas_maximas =int(expression)
         except ValueError:
-            self.epocas_maximas =50
+            self.epocas_maximas = 50
         finally:
             self.text_box_epocas.set_val(self.epocas_maximas)
 
@@ -243,22 +244,22 @@ class Ventana:
 
 
     def barrido(self):
-        x=-1
-        y=0
+        x = -1
+        y = 1
         while(y>=-1):
             x=-1
             while x<=1:
                 p=[x,y]
                 j = np.insert(p, 0, -1.0)
                 alpha=self.adaline.f(j)
-                if (alpha>.5):
-                    self.grafica.plot(x,y, color=(1,0,0,alpha),marker='.' )
+                if (alpha > .5):
+                    blue_color = (alpha - .5) * 2 
+                    self.grafica.plot(x,y, color=(1,0,0, blue_color), marker='.')
                 else:
-                    self.grafica.plot(x,y, color=(0,0,1,alpha),marker='.' )
-                
+                    red_color = 1 - (alpha * 2)
+                    self.grafica.plot(x,y, color=(0,0,1, red_color), marker='.')
                 x+=.01
             y-=.01
-            print(y)
             
     def entrenar_perceptron(self):
         pass
