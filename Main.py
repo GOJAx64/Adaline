@@ -4,10 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import TextBox, Button
 import matplotlib as mpl
-import math
 
 from adaline import Adaline
-
 
 class Ventana:
     puntos, clase_deseada = np.array([]), []
@@ -261,8 +259,25 @@ class Ventana:
                 x+=.01
             y-=.01
             
-    def entrenar_perceptron(self):
-        pass
+    def entrenar_perceptron(self, event):
+        if self.pesos_inicializados and not self.perceptron_entrenado:
+            while not self.termino and self.epoca_actual < self.perceptron.epocas_maximas:
+                self.termino = True
+                self.epoca_actual += 1
+                for i, x in enumerate(self.puntos):
+                    x = np.insert(x, 0, -1.0)
+                    error = self.clase_deseada[i] - self.perceptron.pw(x)
+                    if error != 0:
+                        self.termino = False
+                        self.perceptron.pesos = \
+                            self.perceptron.pesos + np.multiply((self.perceptron.rango * error), x)
+                        self.graficar_linea()
+            self.grafica_perceptron.text(0, -1.250,
+                              'Resultado = ' + ('Converge' if self.termino else 'No converge'),
+                              fontsize=16)
+            self.texto_de_epoca.set_text("Épocas: %s" % self.epoca_actual)
+            plt.pause(0.1)
+            self.perceptron_entrenado = True
 
 if __name__ == '__main__':
     Ventana()
