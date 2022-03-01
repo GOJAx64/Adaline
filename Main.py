@@ -126,7 +126,7 @@ class Ventana:
             
             if(error_cuadratico < self.error_minimo):
                 self.termino=True
-            plt.text(1.2, 0.3,'Resultado = ' + ('Error minimo obtenido' if self.termino else 'No converge'), fontsize=16) 
+            plt.text(1.2, 0.3, 'Error cuadrático = ' + str(error_cuadratico), fontsize=16) 
             self.texto_de_epoca.set_text("Épocas: %s" % self.epoca_actual)
             plt.pause(0.1)
             self.adaline_entrenado = True
