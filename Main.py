@@ -6,6 +6,7 @@ from matplotlib.widgets import TextBox, Button
 import matplotlib as mpl
 
 from adaline import Adaline
+from perceptron import Perceptron
 
 class Ventana:
     puntos, clase_deseada = np.array([]), []
@@ -27,6 +28,13 @@ class Ventana:
     deseada_nodeseada=0
     nodeseada_deseada=0
     nodeseada_nodeseada=0
+
+    perceptron_entrenado=False
+    termino_perceptron=False
+    texto_de_epoca_perceptron = None
+    perceptron=None
+    linea_perceptron=None
+    epoca_actual_perceptron=0
 
     def __init__(self):
         #Configuracion inicial de la interfaz grafica.
@@ -162,6 +170,11 @@ class Ventana:
             self.adaline.inicializar_pesos()
             self.pesos_inicializados = True
             self.graficar_linea()
+            self.perceptron = Perceptron(self.rango, self.epocas_maximas, [-1.0,1])
+            self.perceptron.inicializar_pesos()
+            self.perceptron.pesos=np.copy(self.adaline.pesos)
+            self.pesos_inicializados = True
+            self.graficar_linea_perceptron()
         
 
     def graficar_linea(self):
@@ -179,8 +192,23 @@ class Ventana:
             self.texto_de_epoca.set_text('Época: %s' % self.epoca_actual)
         self.fig.canvas.draw()
         plt.pause(0.1)
-
-
+    def graficar_linea_perceptron(self):
+        x1 = np.array([self.puntos[:, 0].min() - 2, self.puntos[:, 0].max() + 2])
+        m = -self.perceptron.pesos[1] / self.perceptron.pesos[2]
+        c = self.perceptron.pesos[0] / self.perceptron.pesos[2]
+        x2 = m * x1 + c
+        
+        if not self.linea_perceptron:
+            self.linea_perceptron, = self.grafica.plot(x1, x2, 'b-')
+            self.texto_de_epoca_perceptron = self.grafica.text(0.8, 1,
+                                                        'Época perceptron: %s' % self.epoca_actual_perceptron,
+                                                        fontsize=10)
+        else:
+            self.linea_perceptron.set_xdata(x1)
+            self.linea_perceptron.set_ydata(x2)
+            self.texto_de_epoca_perceptron.set_text('Época perceptron: %s' % self.epoca_actual_perceptron)
+        self.fig.canvas.draw()
+        plt.pause(0.1)
     def validar_rango(self, expression):
         try:
             r=float(expression)
@@ -239,7 +267,12 @@ class Ventana:
         self.text_box_error_minimo_deseado.set_val('')
         self.errores=[]
         self.grafica_errores.clear()
-
+        self.epoca_actual_perceptron=0
+        self.termino_perceptron=False
+        self.perceptron_entrenado=False
+        self.texto_de_epoca_perceptron = None
+        self.perceptron=None
+        self.linea_perceptron=None
 
     def barrido(self):
         x = -1
@@ -261,21 +294,21 @@ class Ventana:
             
     def entrenar_perceptron(self, event):
         if self.pesos_inicializados and not self.perceptron_entrenado:
-            while not self.termino and self.epoca_actual < self.perceptron.epocas_maximas:
-                self.termino = True
-                self.epoca_actual += 1
+            while not self.termino_perceptron and self.epoca_actual_perceptron < self.perceptron.epocas_maximas:
+                self.termino_perceptron = True
+                self.epoca_actual_perceptron += 1
                 for i, x in enumerate(self.puntos):
                     x = np.insert(x, 0, -1.0)
                     error = self.clase_deseada[i] - self.perceptron.pw(x)
                     if error != 0:
-                        self.termino = False
+                        self.termino_perceptron = False
                         self.perceptron.pesos = \
                             self.perceptron.pesos + np.multiply((self.perceptron.rango * error), x)
-                        self.graficar_linea()
-            self.grafica_perceptron.text(0, -1.250,
-                              'Resultado = ' + ('Converge' if self.termino else 'No converge'),
+                        self.graficar_linea_perceptron()
+            self.grafica.text(0, -0.250,
+                              'Resultado perceptron= ' + ('Converge' if self.termino_perceptron else 'No converge'),
                               fontsize=16)
-            self.texto_de_epoca.set_text("Épocas: %s" % self.epoca_actual)
+            self.texto_de_epoca_perceptron.set_text("Épocas perceptron: %s" % self.epoca_actual_perceptron)
             plt.pause(0.1)
             self.perceptron_entrenado = True
 
