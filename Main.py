@@ -126,7 +126,7 @@ class Ventana:
             
             if(error_cuadratico < self.error_minimo):
                 self.termino=True
-            plt.text(1.2, 0.3, 'Error mínimo obtenido' if self.termino else 'Error mínimo no obtenido', fontsize=16) 
+            plt.text(1.2, 0.0, 'Adaline = ' + ('Error mínimo obtenido' if self.termino else 'Error mínimo no obtenido'), fontsize=10) 
             self.texto_de_epoca.set_text("Épocas: %s" % self.epoca_actual)
             plt.pause(0.1)
             self.adaline_entrenado = True
@@ -155,7 +155,7 @@ class Ventana:
                 self.grafica.plot(k[0], k[1], 'r.' if not self.clase_deseada[j] else 'bx')            
             
             self.grafica.plot(self.linea.get_xdata(), self.linea.get_ydata(), 'y-')
-            self.grafica.text(0.8, 0.9,'Época: %s' % self.epoca_actual, fontsize=10)
+            self.grafica.text(0.7, 0.9,'Época: %s' % self.epoca_actual, fontsize=10)
             
             for  i,x in enumerate(self.sin_evaluar):
                 x = np.insert(x, 0, -1.0)
@@ -185,13 +185,14 @@ class Ventana:
         
         if not self.linea:
             self.linea, = self.grafica.plot(x1, x2, 'y-')
-            self.texto_de_epoca = self.grafica.text(0.8, 0.9, 'Época: %s' % self.epoca_actual, fontsize=10)
+            self.texto_de_epoca = self.grafica.text(0.7, 0.7, 'Época: %s' % self.epoca_actual, fontsize=10)
         else:
             self.linea.set_xdata(x1)
             self.linea.set_ydata(x2)
             self.texto_de_epoca.set_text('Época: %s' % self.epoca_actual)
         self.fig.canvas.draw()
         plt.pause(0.1)
+
     def graficar_linea_perceptron(self):
         x1 = np.array([self.puntos[:, 0].min() - 2, self.puntos[:, 0].max() + 2])
         m = -self.perceptron.pesos[1] / self.perceptron.pesos[2]
@@ -200,9 +201,7 @@ class Ventana:
         
         if not self.linea_perceptron:
             self.linea_perceptron, = self.grafica.plot(x1, x2, 'b-')
-            self.texto_de_epoca_perceptron = self.grafica.text(0.8, 1,
-                                                        'Época perceptron: %s' % self.epoca_actual_perceptron,
-                                                        fontsize=10)
+            self.texto_de_epoca_perceptron = self.grafica.text(0.7, 0.9, 'Época perceptron: %s' % self.epoca_actual_perceptron, fontsize=10)
         else:
             self.linea_perceptron.set_xdata(x1)
             self.linea_perceptron.set_ydata(x2)
@@ -305,9 +304,7 @@ class Ventana:
                         self.perceptron.pesos = \
                             self.perceptron.pesos + np.multiply((self.perceptron.rango * error), x)
                         self.graficar_linea_perceptron()
-            self.grafica.text(0, -0.250,
-                              'Resultado perceptron= ' + ('Converge' if self.termino_perceptron else 'No converge'),
-                              fontsize=16)
+            plt.text(1.2, 0.9,'Perceptrón= ' + ('Converge' if self.termino_perceptron else 'No converge'), fontsize=10)
             self.texto_de_epoca_perceptron.set_text("Épocas perceptron: %s" % self.epoca_actual_perceptron)
             plt.pause(0.1)
             self.perceptron_entrenado = True
